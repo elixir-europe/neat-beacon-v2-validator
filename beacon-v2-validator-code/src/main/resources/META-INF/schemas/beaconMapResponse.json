@@ -1,0 +1,141 @@
+{
+    "__$ref": "https://raw.githubusercontent.com/ga4gh-beacon/beacon-v2/main/framework/json/responses/beaconMapResponse.json",
+
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "additionalProperties": true,
+    "description": "Information about the Beacon. Aimed to Beacon clients like web pages or Beacon networks.",
+    "properties": {
+        "meta": {
+            "description": "Meta information about the response.",
+            "type": "object",
+            "properties": {
+                "apiVersion": {
+                    "description": "Version of API, e.g. in request or response. Beacon uses a Github-style, \"v\"-prefixed semantic versioning format.",
+                    "type": "string",
+                    "examples": [
+                        "v2.0.1",
+                        "v0.3"
+                    ]
+                },
+                "beaconId": {
+                    "description": "The Id of a Beacon. Usually a reversed domain string, but any URI is acceptable. The purpose of this attribute is, in the context of a Beacon network, to disambiguate responses coming from different Beacons.",
+                    "type": "string",
+                    "examples": [
+                        "org.example.beacon.v2",
+                        "org.progenetix.beacon"
+                    ]
+                },
+                "returnedSchemas": {
+                    "description": "Set of schemas to be used in the response to a request.",
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "description": "Schema to be used for the requested entry type in the response.",
+                        "properties": {
+                            "entityType": {
+                                "$comment": "TO REVIEW: Should that refer to a concept definition? Or would that include an undesired dependency to the configuration?",
+                                "example": "Individual",
+                                "type": "string"
+                            },
+                            "schema": {
+                                "type": "string",
+                                "$comment": "TO DO: Add the correct format as 'uri' or 'regex'",
+                                "examples": [
+                                    "./ga4gh-beacon-dataset-v2.0.0",
+                                    "https://www.example.org/schemas/ga4gh-beacon-dataset-v2.0.0.json"
+                                ]
+                            }
+                        }
+                    }
+                }
+            },
+            "required": [
+                "beaconId",
+                "apiVersion",
+                "returnedSchemas"
+            ],
+            "additionalProperties": true
+        },
+        "response": {
+            "type": "object",
+            "title": "Beacon Map",
+            "description": "Map of a Beacon, its entry types and endpoints. It isconceptually similar to a website sitemap.",
+            "properties": {
+                "$schema": {
+                   "$comment": "TO REVIEW: adding a `format` or `regex` attribute that validates correctly against a file path (relative).",
+                   "description": "Refers to the JSON Schema which describes the set of valid attributes for this particular document type. This attribute is mostly used in schemas that should be tested in Beacon implementations.",
+                   "type": "string"
+                },
+                "endpointSets": {
+                    "description": "List of enpoints included in this Beacon instance. This is list is meant to inform Beacon clients, e.g. a Beacon Network, about the available endpoints, it is not used to generate any automatic list, but could be used for Beacon validation purposes.",
+                    "type": "object",
+                    "minProperties": 1,
+                    "additionalProperties": {
+                        "type": "object",
+                        "properties": {
+                            "endpoints": {
+                                "description": "Optional. A list describing additional endpoints implemented by this Beacon instance for that entry type. Additional details on the endpoint parameters, supported HTTP verbs, etc. could be obtained by parsing the OpenAPI definition referenced in the `openAPIEndpointsDefinition` attribute.",
+                                "type": "object",
+                                "minProperties": 0,
+                                "additionalProperties": {
+                                    "type": "object",
+                                    "properties": {
+                                        "returnedEntryType": {
+                                            "description": "Which entry type is returned by querying this endpoint. It MUST match one of the entry types defined in the Beacon configuration file (`beaconConfiguration.json`).",
+                                            "type": "string"
+                                        },
+                                        "url": {
+                                            "description": "Endpoint URL",
+                                            "format": "uri-template",
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "url",
+                                        "returnedEntryType"
+                                    ]
+                                }
+                            },
+                            "entryType": {
+                                "description": "",
+                                "type": "string"
+                            },
+                           "filteringTermsUrl": {
+                               "description": "Optional. Returns the list of filtering terms that could be applied to this entry type. It is added here for convenience of the Beacon clients, so they don't need to parse the OpenAPI endpoints definition to get that endpoint. Also, in very simple Beacons, that endpoint could be the one of the few implemented, together with \u00b4rootUrl` and \u00b4singleEntryUrl`, in which case the whole map of endpoints is found in the current Map.",
+                               "format": "uri-template",
+                               "type": "string"
+                            },
+                           "openAPIEndpointsDefinition": {
+                               "description": "Reference to the file that includes the OpenAPI definition of the endpoints implemented in this Beacon instance. The referenced file MUST BE a valid OpenAPI definition file, as it is expected that the Beacon clients (e.g. a Beacon Network) should be able to parse it to discover additional details on the supported verbs, parameters, etc.",
+                               "type": "string"
+                            },
+                            "rootUrl": {
+                                "description": "The base url for this entry type. Returns a list of entries. It is added here for convenience of the Beacon clients, so they don't need to parse the OpenAPI endpoints definition to get that base endpoint. Also, in very simple Beacons, that endpoint could be the only one implemented, together with \u00b4singleEntryUrl`, in which case the whole map of endpoints is found in the current Map.",
+                                "format": "uri",
+                                "type": "string"
+                            },
+                            "singleEntryUrl": {
+                                "description": "Optional, but recommended. Returns only one instance of this entry, identified by an `id`. It is added here for convenience of the Beacon clients, so they don't need to parse the OpenAPI endpoints definition to get that base endpoint. Also, in very simple Beacons, that endpoint could be the only one implemented, together with \u00b4rootUrl`, in which case the whole map of endpoints is found in the current Map.",
+                                "format": "uri-template",
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                             "entryType",
+                             "rootUrl"
+                        ]
+                    }
+                }
+            },
+            "required": [
+                "$schema",
+                "endpointSets"
+            ]
+        }
+    },
+    "required": [
+        "meta",
+        "response"
+    ],
+    "type": "object"
+}

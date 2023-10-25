@@ -26,8 +26,7 @@
 package es.bsc.inb.ga4gh.beacon.validator;
 
 import es.elixir.bsc.json.schema.ValidationError;
-import jakarta.json.Json;
-import jakarta.json.JsonObjectBuilder;
+import java.net.URI;
 
 /**
  * @author Dmitry Repchevsky
@@ -43,7 +42,9 @@ public class BeaconValidationMessage {
     
     public BeaconValidationMessage(ValidationError error) {
         this(BeaconValidationErrorType.JSON_SCHEMA_ERROR, error.code, 
-                error.id == null ? null : error.id.toString(), error.path, error.message);
+                error.id == null ? error.pointer : error.id.getScheme() + ":" + 
+                        error.id.getSchemeSpecificPart() + "#" + error.pointer, 
+                error.path, error.message);
     }
     
     public BeaconValidationMessage(BeaconValidationErrorType type, String message) {

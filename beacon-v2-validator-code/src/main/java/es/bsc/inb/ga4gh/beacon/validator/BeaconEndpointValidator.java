@@ -262,7 +262,7 @@ public class BeaconEndpointValidator {
                 }
                     
                 final JsonObject o = value.asJsonObject().getJsonObject("response");
-                if (o.containsKey("collections")) {
+                if (o != null && o.containsKey("collections")) {
                     return JSONB.fromJson(json, 
                             new BeaconCollectionsResponse<JsonObject>(){}
                                     .getClass().getGenericSuperclass());

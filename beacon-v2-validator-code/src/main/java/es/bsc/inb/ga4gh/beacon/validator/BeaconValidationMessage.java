@@ -26,7 +26,6 @@
 package es.bsc.inb.ga4gh.beacon.validator;
 
 import es.elixir.bsc.json.schema.ValidationError;
-import java.net.URI;
 
 /**
  * @author Dmitry Repchevsky

@@ -25,7 +25,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>es.bsc.inb.ga4gh</groupId>
     <artifactId>neat-beacon-v2-validator</artifactId>
-    <version>0.0.4</version>
+    <version>0.0.7</version>
     <packaging>pom</packaging>
 
     <description>
@@ -65,7 +65,7 @@
         
         <jakarta.json.version>2.1.0</jakarta.json.version>
         <jakarta.json.bind.version>3.0.0</jakarta.json.bind.version>
-        <jakarta.jaronuinga.version>0.5.1</jakarta.jaronuinga.version>
+        <jakarta.jaronuinga.version>0.5.2</jakarta.jaronuinga.version>
     </properties>
 
     <repositories>

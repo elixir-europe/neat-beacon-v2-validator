@@ -134,13 +134,14 @@ public class BeaconMetadataValidator {
     }
 
     public String loadMetadata(String endpoint, BeaconMetadataSchema schema, ValidationObserver reporter) {
-        return loadMetadata(endpoint + ENDPOINTS.get(schema), reporter);
+        return loadMetadata(endpoint + ENDPOINTS.get(schema) + 
+                (schema == BeaconMetadataSchema.BEACON_FILTERING_TERMS_SCHEMA ? "?limit=0": ""), reporter);
     }
     
     public String loadMetadata(String endpoint, ValidationObserver reporter) {
         reporter.message(String.format("loading metadata: %s", endpoint));
         try {
-            final URI uri = new URI(endpoint + "?limit=0");
+            final URI uri = new URI(endpoint);
             if (!uri.isAbsolute()) {
                 reporter.error(new BeaconValidationMessage(
                         BeaconValidationErrorType.CONNECTION_ERROR,

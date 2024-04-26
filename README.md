@@ -1,4 +1,4 @@
-# Beacon validator for the Beacon Network
+# Beacon validator for the Beacons and Beacon Network
 
 The following code validates a beacon instance to know if it is suitable to query in the ELIXIR Beacon Network. Also, it reports the schema errors that the instance might have.
 

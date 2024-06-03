@@ -126,6 +126,10 @@ public class BeaconMetadataValidator {
     
     public BeaconInformationalResponse parseMetadata(String json, BeaconMetadataSchema schema) {
         final Class<? extends BeaconInformationalResponse> clazz = MODELS.get(schema);
+        return parseMetadata(json, clazz);
+    }
+
+    public <T> T parseMetadata(String json, Class<T> clazz) {
         try {
             return jsonb.fromJson(json, clazz);
         } catch (Exception ex) {}

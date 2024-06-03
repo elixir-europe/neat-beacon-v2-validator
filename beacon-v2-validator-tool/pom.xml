@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  Copyright (C) 2023 Spanish National Bioinformatics Institute (INB) and
+  Copyright (C) 2024 Spanish National Bioinformatics Institute (INB) and
   Barcelona Supercomputing Center
 
   Modifications to the initial code base are copyright of their respective
@@ -27,7 +27,7 @@
     <parent>
         <groupId>es.bsc.inb.ga4gh</groupId>
         <artifactId>neat-beacon-v2-validator</artifactId>
-        <version>0.0.7</version>
+        <version>0.0.8-SNAPSHOT</version>
     </parent>
 
     <artifactId>beacon-v2-validator-tool</artifactId>
@@ -63,7 +63,7 @@
         <dependency>
             <groupId>es.bsc.inb.ga4gh</groupId>
             <artifactId>beacon-v2-validator-code</artifactId>
-            <version>0.0.7</version>
+            <version>0.0.8</version>
         </dependency>
         
         <dependency>
@@ -116,7 +116,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
-                <version>3.5.0</version>
+                <version>3.7.1</version>
                 <configuration>
                     <appendAssemblyId>false</appendAssemblyId>
                     <descriptorRefs>

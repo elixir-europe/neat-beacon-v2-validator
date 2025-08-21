@@ -105,15 +105,18 @@ public class BeaconMetadataModel {
             if (returnedSchemas != null) {
                 for (int i = 0, n = returnedSchemas.size(); i < n; i++) {
                     final SchemaPerEntity returnedSchema = returnedSchemas.get(i);
-                    final List<BeaconValidationMessage> err = new ArrayList();
-                    loadSchema(returnedSchema.getSchema(), returnedSchema.getEntityType(), 
-                            new ValidationErrorsCollector(err));
-                    
-                    // set up 'location'
-                    for (BeaconValidationMessage e : err) {
-                        reporter.error(new BeaconValidationMessage(
-                            e.type, e.code, String.format("/info/meta/returnedSchemas/%d/schema", i), 
-                            e.path, e.message));
+                    final String schema = returnedSchema.getSchema();
+                    if (schema != null) {
+                        final List<BeaconValidationMessage> err = new ArrayList();
+                        loadSchema(schema, returnedSchema.getEntityType(), 
+                                new ValidationErrorsCollector(err));
+
+                        // set up 'location'
+                        for (BeaconValidationMessage e : err) {
+                            reporter.error(new BeaconValidationMessage(
+                                e.type, e.code, String.format("/info/meta/returnedSchemas/%d/schema", i), 
+                                e.path, e.message));
+                        }
                     }
                 }
             }

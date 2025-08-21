@@ -33,7 +33,9 @@ import es.bsc.inb.ga4gh.beacon.framework.model.v200.configuration.RelatedEndpoin
 import es.bsc.inb.ga4gh.beacon.framework.model.v200.responses.AbstractBeaconResponse;
 import es.bsc.inb.ga4gh.beacon.framework.model.v200.responses.BeaconCollections;
 import es.bsc.inb.ga4gh.beacon.framework.model.v200.responses.BeaconCollectionsResponse;
+import es.bsc.inb.ga4gh.beacon.framework.model.v200.responses.BeaconInformationalResponse;
 import es.bsc.inb.ga4gh.beacon.framework.model.v200.responses.BeaconInformationalResponseMeta;
+import es.bsc.inb.ga4gh.beacon.framework.model.v200.responses.BeaconResponseMeta;
 import es.bsc.inb.ga4gh.beacon.framework.model.v200.responses.BeaconResultset;
 import es.bsc.inb.ga4gh.beacon.framework.model.v200.responses.BeaconResultsets;
 import es.bsc.inb.ga4gh.beacon.framework.model.v200.responses.BeaconResultsetsResponse;
@@ -211,17 +213,33 @@ public class BeaconEndpointValidator {
         return single_entry_endpoint.toString();
     }
 
-    private String getSchemaURL(String entityType) {
-        if (model.info != null) {
-            final BeaconInformationalResponseMeta meta = model.info.getMeta();
-            final List<SchemaPerEntity> returnedSchemas = meta.getReturnedSchemas();
-            if (returnedSchemas != null) {
-                for (SchemaPerEntity returnedSchema : returnedSchemas) {
-                    if (entityType.equals(returnedSchema.getEntityType())) {
-                        return returnedSchema.getSchema();
-                    }
+    private String getSchemaURL(AbstractBeaconResponse response, String entityType) {
+        final BeaconResponseMeta meta = response.getMeta();
+        if (meta != null) {
+            final String schemaURL = getSchemaURL(meta.getReturnedSchemas(), entityType);
+            if (schemaURL != null) {
+                return schemaURL;
+            }
+        }
+        
+        return getSchemaURL(model.info, entityType);
+    }
+    
+    private String getSchemaURL(List<SchemaPerEntity> schemas, String entityType) {
+        if (schemas != null) {
+            for (SchemaPerEntity schema : schemas) {
+                if (entityType.equals(schema.getEntityType())) {
+                    return schema.getSchema();
                 }
             }
+        }
+        return null;
+    }
+
+    private String getSchemaURL(BeaconInformationalResponse response, String entityType) {
+        final BeaconInformationalResponseMeta meta = response.getMeta();
+        if (meta != null) {
+            return getSchemaURL(meta.getReturnedSchemas(), entityType);
         }
         
         if (model.configuration != null) {
@@ -239,7 +257,7 @@ public class BeaconEndpointValidator {
 
         return null;
     }
-
+    
     private AbstractBeaconResponse validateEntryEndpoint(String endpoint,
             ValidationObserver reporter) {
 
@@ -285,10 +303,14 @@ public class BeaconEndpointValidator {
     private JsonObject validateResponse(AbstractBeaconResponse response, 
             String entryType, ValidationObserver reporter) {
 
-        JsonObject entry = null;
-        
-        final String entryTypeSchema = (entryType == null) ? null : getSchemaURL(entryType);
-        final JsonSchema schema = model.loadSchema(entryTypeSchema, entryType, reporter);
+        final JsonSchema schema;
+        if (entryType == null) {
+            schema = null;
+        } else {
+            final String entryTypeSchema = getSchemaURL(response, entryType);
+            schema = entryTypeSchema == null ? null :
+                    model.loadSchema(entryTypeSchema, entryType, reporter);
+        }
 
         final List<JsonObject> entries = new ArrayList();
         if (response instanceof BeaconCollectionsResponse res) {
@@ -308,6 +330,7 @@ public class BeaconEndpointValidator {
             }
         }
         
+        JsonObject entry = null;
         if (schema != null) {
             final List<ValidationError> errors = new ArrayList();
             for (JsonObject obj : entries) {
